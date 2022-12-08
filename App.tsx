@@ -1,20 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { ContextProvider } from './src/context/userContext';
 
-export default function App() {
+// importando a página de login
+import Auth from './src/pages/login';
+import Account from './src/pages/updateUser';
+
+// criando o navegador
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+// abas quando o usuário está logado
+function LoggedUser() {  
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Tab.Navigator initialRouteName=''>
+      <Tab.Screen name="Account" component={Account} />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function App() {
+  const [context, setContext] = useState({});
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="login" component={Auth} initialParams={setContext}/>
+        <ContextProvider value={context}>
+          <Stack.Screen
+            name="LoggedUser"
+            component={LoggedUser}
+            options={{ headerShown: false }}
+          />
+        </ContextProvider>
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default App;
